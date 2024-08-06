@@ -5,11 +5,11 @@ import random
 ALPH = "abcdefghijklmnopqrstuvwxyz"
 N, K, Q = 1, 5, 1 # conf.len_of_keys, conf.num_of_keys, conf.num_of_queries
 
-def create_associative_recall_dataset(N, K, Q, savedirname):
+def create_associative_recall_dataset(N, K, Q, savedirname, f_list=None):
     M = 100000 # num of trains to create
     T = 1000 # num of tests to create
     Ngrams = ["".join(word) for word in product(ALPH, repeat=N)]
-    for phase, num_data in [("train", M), ("test", T)]:
+    for p, phase, num_data in [(0, "train", M), (1, "test", T)]:
         print(f"phase: {phase}")
         for i in range(num_data):
             if i % 100 == 0: 
@@ -29,12 +29,16 @@ def create_associative_recall_dataset(N, K, Q, savedirname):
             seq_str = "".join(seq_list)
             if phase == "train" and i <= 10:
                 print(f"({i})", seq_str[:20], "...", seq_str[-20:])
-            with open(f"{savedirname}/{phase}/{i}.txt", "w") as f:
-                f.write(seq_str)
+            if f_list is None:
+                with open(f"{savedirname}/{phase}/{i}.txt", "w") as f:
+                    f.write(seq_str)
+            else:
+                f_list[p].write(seq_str + "\n")
 
 if __name__ == "__main__":
     dataset_dirname = f'associative-recall_N={N}_K={K}_Q={Q}_ALPH={len(ALPH)}'
     if not os.path.exists(f"{dataset_dirname}/test"):
         os.makedirs(f"{dataset_dirname}/train")
         os.makedirs(f"{dataset_dirname}/test")
-    create_associative_recall_dataset(N, K, Q, dataset_dirname)
+    f_list = [open(f"{dataset_dirname}/train/all.txt", "w"), open(f"{dataset_dirname}/test/all.txt", "w")]
+    create_associative_recall_dataset(N, K, Q, dataset_dirname, f_list=f_list)
