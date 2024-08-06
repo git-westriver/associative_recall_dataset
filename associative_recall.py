@@ -1,9 +1,16 @@
 import os
+import argparse
 from itertools import product
 import random
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-N", default=1, help="length of keys")
+parser.add_argument("-K", default=5, help="number of keys")
+parser.add_argument("-Q", default=1, help="number of queries")
+
+args = parser.parse_args()
+N, K, Q = map(int, [args.N, args.K, args.Q])
 ALPH = "abcdefghijklmnopqrstuvwxyz"
-N, K, Q = 1, 5, 1 # conf.len_of_keys, conf.num_of_keys, conf.num_of_queries
 
 def create_associative_recall_dataset(N, K, Q, savedirname, f_list=None):
     M = 100000 # num of trains to create
